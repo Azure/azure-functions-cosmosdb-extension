@@ -1,33 +1,69 @@
-# Project
+# Azure WebJobs CosmosDB Extensions
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+This repo contains binding extensions for the Azure WebJobs SDK intended for working with [Azure CosmosDB](https://azure.microsoft.com/en-us/products/cosmos-db/)'s various APIs. See the [Azure WebJobs SDK repo](https://github.com/Azure/azure-webjobs-sdk) for more information on WebJobs.
 
-As the maintainer of this project, please make a few updates:
+## SQL Api
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+The extension for working with the SQL API is located in the general [WebJobs Extension repo](https://github.com/Azure/azure-webjobs-sdk-extensions#documentdb)
 
-## Contributing
+## MongoDB Api
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+To configure the binding, add the Mongo connection string as an app setting or environment variable using the setting name `CosmosDB`. The name of the setting can be changed with the `ConnectionStringKey` proeprty of the binding attribute.
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+In this example, the `newItem` object is upserted into the `ItemCollection` collection of the `ItemDb` database.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+```csharp
+public static void InsertDocument(
+    [QueueTrigger("sample")] QueueData trigger,
+    [CosmosDBMongo("DatabaseName", "ItemCollection")] out BsonDocument newItem)
+{
+    newItem = new BsonDocument();
+}
+```
 
-## Trademarks
+Simple C# objects can also be automatically converted into BSON. The following will write a simple document to the service.
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+```csharp
+public static void InsertDocument(
+    [QueueTrigger("sample")] QueueData trigger,
+    [CosmosDBMongo("DatabaseName", "ItemCollection")] out ItemDoc newItem)
+{
+    newItem = new ItemDoc()
+    {
+        Text = "sample text"
+    };
+}
+```
+
+If you need more control, you can also specify a parameter of type `IMongoClient`. The following example uses MongoClient to query for all documents.
+
+```csharp
+public static void DocumentClient(
+    [QueueTrigger("sample")] QueueData trigger,
+    [CosmosDBMongo] IMongoClient client,
+    TraceWriter log)
+{
+    var documents = client.getDatabase("Database").getCollection<BsonDocument>("Collection").find();
+
+    foreach (BsonDocument d in documents)
+    {
+        log.Info(d);
+    }
+}
+```
+
+### Triggers
+
+There is a separate attribute for writing functions which trigger on changes to a Cosmos Mongo collection. `CosmosDBMongoTrigger` has a few additional configurations available compared to the basic attribute. Because the trigger needs to keep track of which data has already been seen, it uses an additional collection. By default, it uses a collection named `leases` in the same database as the source collection. However `LeaseConnectionStringKey`, `LeaseDatabaseName` and `LeaseCollectionName` can be used if desired to place it elsewhere.
+
+```csharp
+public static void Trigger(
+    [CosmosDBMongoTrigger(DatabaseName, MonitoredCollectionName)] IEnumerable<BsonDocument> docs,
+    ILogger logger)
+{
+    foreach (BsonDocument doc in docs)
+    {
+        logger.LogInformation("Doc triggered");
+    }
+}
+```
