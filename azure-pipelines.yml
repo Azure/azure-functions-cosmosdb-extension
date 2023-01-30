@@ -21,10 +21,8 @@ trigger:
       - master
 
 continueOnError: false
-pool:
-  name: CosmosDB-1ESAgent
-  demands:
-    - ImageOverride -equals MMSUbuntu20.04TLS
+pool: 
+   vmImage: ubuntu-20.04
 
 steps:
   - task: DotNetCoreCLI@2
