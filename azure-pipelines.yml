@@ -1,19 +1,87 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+name: $(Build.SourceBranchName)_$(Build.Reason)_$(majorVersion).$(Build.BuildId)$(Rev:.r)
+variables:
+  buildConfiguration: Release
+  majorVersion: 0.0.0
+  isReleaseTriggered: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/action/release')]
 
+# Enable PR validation on branches master and dev
+pr:
+  branches:
+    include:
+      - master
+      - dev
+
+# Enable CI on branches master and dev
+# Batch builds
 trigger:
-- main
+  batch: true
+  branches:
+    include:
+      - dev
+      - master
 
-pool:
-  vmImage: ubuntu-latest
+continueOnError: false
+pool: 
+   vmImage: ubuntu-20.04
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  - script: ls -R
+  - task: DotNetCoreCLI@2
+    displayName: Build project
+    inputs:
+      command: 'build'
+      arguments: '--configuration Release -p:IsLocalBuild=False'
+      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - task: DotNetCoreCLI@2
+    displayName: Build test projects
+    inputs:
+      command: 'build'
+      arguments: '--configuration Release -p:IsLocalBuild=False'
+      projects: |
+        Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests/Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests.csproj
+
+  - task: DotNetCoreCLI@2
+    displayName: Run unit tests
+    inputs:
+      command: test
+      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
+      arguments: --filter TestCategory !~ EmulatorRequired
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: Component Detection
+
+  - task: DotNetCoreCLI@2
+    displayName: Run e2e tests
+    inputs:
+      command: test
+      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
+      arguments: --filter TestCategory ~ EmulatorRequired
+
+  - task: Bash@3
+    displayName: Package current source as NuGet package and pack it in Docker
+    inputs:
+      targetType: filePath
+      filePath: ./script/create_package.sh
+
+  - task: DotNetCoreCLI@2
+    displayName: Pack NuGet package
+    inputs:
+      command: pack
+      packDirectory: '$(Build.ArtifactStagingDirectory)'
+      searchPatternPack: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
+      configurationToPack: Release
+      includesymbols: true
+
+  - task: ManifestGeneratorTask@0
+    displayName: SBOM Generation Task
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)
+      PackageName: Microsoft.Azure.WebJobs.CosmosDb.Mongo
+      Verbosity: Information
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: drop
+      publishLocation: Container
