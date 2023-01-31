@@ -11,9 +11,10 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo.Tests
     using System.Collections.Concurrent;
 
     [TestClass]
+    [TestCategory("EmulatorRequired")]
     public class MongoTests
     {
-        private MongoClient client = new MongoClient("mongodb://localhost:C2y6yDjf5%2FR%2Bob0N8A7Cgv30VRDJIWEHLM%2B4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw%2FJw%3D%3D@localhost:10255/admin?ssl=true&retrywrites=false");
+        private MongoClient client = new MongoClient(Environment.GetEnvironmentVariable("CosmosDB"));
         private static Guid guid;
 
         private ChangeProcessor<MongoPartition, MongoLease, BsonDocument> CreateProcessor(string collection, string id, Func<IEnumerable<BsonDocument>, Task> process)

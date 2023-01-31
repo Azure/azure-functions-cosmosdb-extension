@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Microsoft.Azure.WebJobs;
 using System.Diagnostics;
 
 namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
 {
     // Triggers are difficult to mock, so test against a 'real' mongodb endpoint. Requires an environment variable CosmosDB to be set to a MongoDB connection string
     [TestClass]
+    [TestCategory("EmulatorRequired")]
     public class EndToEndTests
     {
         private const string DatabaseName = "TestDatabase";
