@@ -25,6 +25,7 @@ pool:
    vmImage: ubuntu-20.04
 
 steps:
+  - script: ls -R
   - task: DotNetCoreCLI@2
     displayName: Build project
     inputs:
