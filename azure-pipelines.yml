@@ -47,6 +47,8 @@ steps:
       command: test
       projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
       arguments: --filter TestCategory!~EmulatorRequired
+    env:
+      CosmosDB: placeholder
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: Component Detection
@@ -57,6 +59,8 @@ steps:
       command: test
       projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
       arguments: --filter TestCategory~EmulatorRequired
+    env:
+      CosmosDB: $(CosmosDB)
 
   - task: DotNetCoreCLI@2
     displayName: Pack NuGet package
