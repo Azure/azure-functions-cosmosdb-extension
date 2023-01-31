@@ -46,7 +46,7 @@ steps:
     inputs:
       command: test
       projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
-      arguments: --filter TestCategory !~ EmulatorRequired
+      arguments: --filter TestCategory!~EmulatorRequired
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: Component Detection
@@ -56,13 +56,7 @@ steps:
     inputs:
       command: test
       projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
-      arguments: --filter TestCategory ~ EmulatorRequired
-
-  - task: Bash@3
-    displayName: Package current source as NuGet package and pack it in Docker
-    inputs:
-      targetType: filePath
-      filePath: ./script/create_package.sh
+      arguments: --filter TestCategory~EmulatorRequired
 
   - task: DotNetCoreCLI@2
     displayName: Pack NuGet package
