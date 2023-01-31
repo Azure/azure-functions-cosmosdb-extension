@@ -60,7 +60,7 @@ steps:
       --name=test-linux-emulator-mongo
       --env AZURE_COSMOS_EMULATOR_PARTITION_COUNT=10
       --env AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE=$ipaddr
-      --env AZURE_COSMOS_EMULATOR_ENABLE_MONGODB_ENDPOINT=4.0
+      --env AZURE_COSMOS_EMULATOR_ARGS="/EnableMongoDBEndpoint=4.0"
       mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:mongodb
     displayName: Start Emulator
 
