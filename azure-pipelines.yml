@@ -53,26 +53,25 @@ steps:
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: Component Detection
 
-#  - script:
-#      docker run 
-#      --publish 8081:8081
-#      --publish 10250-10255:10250-10255
-#      --name=test-linux-emulator-mongo
-#      --env AZURE_COSMOS_EMULATOR_PARTITION_COUNT=10
-#      --env AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=true
-#      --env AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE=$ipaddr
-#      --env AZURE_COSMOS_EMULATOR_ENABLE_MONGODB_ENDPOINT=3.2
-#      mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:mongodb
-#    displayName: Start Emulator
+  - script:
+      docker run 
+      --publish 8081:8081
+      --publish 10250-10255:10250-10255
+      --name=test-linux-emulator-mongo
+      --env AZURE_COSMOS_EMULATOR_PARTITION_COUNT=10
+      --env AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE=$ipaddr
+      --env AZURE_COSMOS_EMULATOR_ENABLE_MONGODB_ENDPOINT=4.0
+      mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:mongodb
+    displayName: Start Emulator
 
-#  - task: DotNetCoreCLI@2
-#    displayName: Run e2e tests
-#    inputs:
-#      command: test
-#      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
-#      arguments: --filter TestCategory~EmulatorRequired
-#    env:
-#      CosmosDB: $(CosmosDB)
+  - task: DotNetCoreCLI@2
+    displayName: Run e2e tests
+    inputs:
+      command: test
+      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
+      arguments: --filter TestCategory~EmulatorRequired
+    env:
+      CosmosDB: $(CosmosDB)
 
   - task: DotNetCoreCLI@2
     displayName: Pack NuGet package
