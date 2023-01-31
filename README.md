@@ -2,9 +2,9 @@
 
 This repo contains binding extensions for the Azure WebJobs SDK intended for working with [Azure CosmosDB](https://azure.microsoft.com/en-us/products/cosmos-db/)'s various APIs. See the [Azure WebJobs SDK repo](https://github.com/Azure/azure-webjobs-sdk) for more information on WebJobs.
 
-## SQL Api
+## NoSQL Api
 
-The extension for working with the SQL API is located in the general [WebJobs Extension repo](https://github.com/Azure/azure-webjobs-sdk-extensions#documentdb)
+The extension for working with the NoSQL API is located in the general [WebJobs Extension repo](https://github.com/Azure/azure-webjobs-sdk-extensions#documentdb)
 
 ## MongoDB Api
 
