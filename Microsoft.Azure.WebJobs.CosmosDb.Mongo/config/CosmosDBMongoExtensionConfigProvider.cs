@@ -98,7 +98,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
             if (string.IsNullOrEmpty(connection))
             {
                 throw new InvalidOperationException($"Cosmos DB connection configuration '{connectionStringKey}' does not exist. " +
-                                    $"Make sure that it is a defined App Setting.");
+                                    $"Make sure that it is a defined App Setting or environment variable.");
             }
             return connection;
         }
