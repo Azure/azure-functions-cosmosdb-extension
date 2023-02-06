@@ -10,6 +10,22 @@ The extension for working with the NoSQL API is located in the general [WebJobs 
 
 To configure the binding, add the Mongo connection string as an app setting or environment variable using the setting name `CosmosDB`. The name of the setting can be changed with the `ConnectionStringKey` proeprty of the binding attribute.
 
+### Reading Documents
+
+The extension currently supports getting either a database or a collection. 
+
+```chsharp
+public void Inputs(
+    [CosmosDBMongo(DatabaseName)] IMongoDatabase db,
+    [CosmosDBMongo(DatabaseName, CollectionName)] IMongoCollection<BsonDocument> coll)
+{
+    Assert.IsNotNull(db);
+    Assert.IsNotNull(coll);
+}
+```
+
+### Writing Documents
+
 In this example, the `newItem` object is upserted into the `ItemCollection` collection of the `ItemDb` database.
 
 ```csharp
