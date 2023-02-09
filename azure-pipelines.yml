@@ -75,7 +75,6 @@ steps:
 
   - task: EsrpCodeSigning@1
     displayName: Sign extension assembly
-    condition: and(succeeded(), eq(variables.isReleaseTriggered, 'True'))
     inputs:
       connectedServiceName: ESRP Service
       folderPath: src/Microsoft.Azure.WebJobs.CosmosDb.Mongo/bin/Debug/netstandard2.0/
@@ -116,7 +115,6 @@ steps:
 
   - task: EsrpCodeSigning@1
     displayName: Sign extension package
-    condition: and(succeeded(), eq(variables.isReleaseTriggered, 'True'))
     inputs:
       connectedServiceName: ESRP Service
       folderPath: $(Build.ArtifactStagingDirectory)
