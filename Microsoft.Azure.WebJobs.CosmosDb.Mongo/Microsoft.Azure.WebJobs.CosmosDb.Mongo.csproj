@@ -7,6 +7,7 @@
 	<AzureFunctionsVersion>v4</AzureFunctionsVersion>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageProjectUrl>https://github.com/Azure/azure-functions-cosmosdb-extension</PackageProjectUrl>
+	<Authors>Microsoft</Authors>
   </PropertyGroup>
 
   <ItemGroup>
