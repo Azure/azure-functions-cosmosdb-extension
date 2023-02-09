@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/Azure/azure-functions-cosmosdb-extension</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
