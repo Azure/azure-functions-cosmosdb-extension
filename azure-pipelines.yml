@@ -74,7 +74,7 @@ steps:
 #      arguments: --filter TestCategory~EmulatorRequired
 #    env:
 #      CosmosDB: $(CosmosDB)
-
+  - script: ls -R 
   - task: EsrpCodeSigning@2
     displayName: Sign extension assembly
     inputs:
