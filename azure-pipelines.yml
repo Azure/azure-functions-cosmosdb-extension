@@ -75,7 +75,7 @@ steps:
 #    env:
 #      CosmosDB: $(CosmosDB)
 
-  - task: EsrpCodeSigning@1
+  - task: EsrpCodeSigning@2
     displayName: Sign extension assembly
     inputs:
       connectedServiceName: ESRP Service
