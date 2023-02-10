@@ -79,7 +79,7 @@ steps:
     displayName: Sign extension assembly
     inputs:
       connectedServiceName: ESRP Service
-      folderPath: src/Microsoft.Azure.WebJobs.CosmosDb.Mongo/bin/Debug/net6.0/
+      folderPath: src/Microsoft.Azure.WebJobs.CosmosDb.Mongo/bin/Release/net6.0/
       pattern: Microsoft.Azure.WebJobs.CosmosDb.Mongo.dll
       signConfigType: inlineSignParams
       inlineOperation: |
