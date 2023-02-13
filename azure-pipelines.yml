@@ -74,38 +74,7 @@ steps:
 #      arguments: --filter TestCategory~EmulatorRequired
 #    env:
 #      CosmosDB: $(CosmosDB)
-  - script: ls -R 
-  - task: EsrpCodeSigning@2
-    displayName: Sign extension assembly
-    inputs:
-      connectedServiceName: ESRP Service
-      folderPath: Microsoft.Azure.WebJobs.CosmosDb.Mongo/bin/Release/net6.0/
-      pattern: Microsoft.Azure.WebJobs.CosmosDb.Mongo.dll
-      signConfigType: inlineSignParams
-      inlineOperation: |
-          [
-            {
-              "KeyCode": "CP-230012",
-              "OperationCode": "SigntoolSign",
-              "Parameters": {
-                "OpusName": "Microsoft",
-                "OpusInfo": "http://www.microsoft.com",
-                "FileDigest": "/fd \"SHA256\"",
-                "PageHash": "/NPH",
-                "TimeStamp": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-              },
-              "ToolName": "sign",
-              "ToolVersion": "1.0"
-            },
-            {
-              "KeyCode": "CP-230012",
-              "OperationCode": "SigntoolVerify",
-              "Parameters": {},
-              "ToolName": "sign",
-              "ToolVersion": "1.0"
-            }
-          ]
-  
+
   - task: DotNetCoreCLI@2
     displayName: Pack NuGet package
     inputs:
@@ -114,31 +83,6 @@ steps:
       searchPatternPack: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
       configurationToPack: Release
       includesymbols: true
-
-  - task: EsrpCodeSigning@2
-    displayName: Sign extension package
-    inputs:
-      connectedServiceName: ESRP Service
-      folderPath: $(Build.ArtifactStagingDirectory)
-      pattern: Microsoft.Azure.WebJobs.CosmosDb.Mongo.*.nupkg
-      signConfigType: inlineSignParams
-      inlineOperation: |
-            [
-                {
-                  "KeyCode": "CP-230012",
-                  "OperationCode": "NuGetSign",
-                  "Parameters": {},
-                  "ToolName": "sign",
-                  "ToolVersion": "1.0"
-                },
-                {
-                  "KeyCode": "CP-230012",
-                  "OperationCode": "NuGetVerify",
-                  "Parameters": {},
-                  "ToolName": "sign",
-                  "ToolVersion": "1.0"
-                }
-            ]
 
   - task: ManifestGeneratorTask@0
     displayName: SBOM Generation Task
