@@ -83,6 +83,7 @@ steps:
       searchPatternPack: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
       configurationToPack: Release
       includesymbols: true
+      arguments: -IncludeReferencedProjects
 
   - task: ManifestGeneratorTask@0
     displayName: SBOM Generation Task
