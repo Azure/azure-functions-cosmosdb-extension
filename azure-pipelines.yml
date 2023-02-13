@@ -21,8 +21,10 @@ trigger:
       - master
 
 continueOnError: false
-pool: 
-   vmImage: ubuntu-20.04
+pool:
+  name: 1ES-Hosted-Azfunc
+  demands:
+    - ImageOverride -equals MMSUbuntu20.04TLS
 
 steps:
   - script: ls -R
@@ -72,13 +74,12 @@ steps:
 #      arguments: --filter TestCategory~EmulatorRequired
 #    env:
 #      CosmosDB: $(CosmosDB)
-
-  - task: EsrpCodeSigning@1
+  - script: ls -R 
+  - task: EsrpCodeSigning@2
     displayName: Sign extension assembly
-    condition: and(succeeded(), eq(variables.isReleaseTriggered, 'True'))
     inputs:
       connectedServiceName: ESRP Service
-      folderPath: src/Microsoft.Azure.WebJobs.CosmosDb.Mongo/bin/Debug/netstandard2.0/
+      folderPath: Microsoft.Azure.WebJobs.CosmosDb.Mongo/bin/Release/net6.0/
       pattern: Microsoft.Azure.WebJobs.CosmosDb.Mongo.dll
       signConfigType: inlineSignParams
       inlineOperation: |
@@ -114,9 +115,8 @@ steps:
       configurationToPack: Release
       includesymbols: true
 
-  - task: EsrpCodeSigning@1
+  - task: EsrpCodeSigning@2
     displayName: Sign extension package
-    condition: and(succeeded(), eq(variables.isReleaseTriggered, 'True'))
     inputs:
       connectedServiceName: ESRP Service
       folderPath: $(Build.ArtifactStagingDirectory)
