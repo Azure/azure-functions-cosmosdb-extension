@@ -4,6 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+	<!-- Add strong name signing properties -->
+	<SignAssembly>True</SignAssembly>
+	<PublicSign>true</PublicSign>
+	<DelaySign>False</DelaySign>
+	<AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
