@@ -5,10 +5,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<AzureFunctionsVersion>v4</AzureFunctionsVersion>
-	<Copyright>&#169; Microsoft Corporation. All rights reserved.</Copyright>
+	<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageProjectUrl>https://github.com/Azure/azure-functions-cosmosdb-extension</PackageProjectUrl>
 	<Authors>Microsoft</Authors>
+
+	<!-- Add strong name signing properties -->
+	<SignAssembly>True</SignAssembly>
+	<PublicSign>true</PublicSign>
+    <DelaySign>False</DelaySign>
+	<AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

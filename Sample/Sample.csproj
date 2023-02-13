@@ -6,8 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
-	  <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
-	  <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+	<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
+	<PackageReference Include="MongoDB.Driver" Version="2.17.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Azure.WebJobs.CosmosDb.Mongo\Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj" />
