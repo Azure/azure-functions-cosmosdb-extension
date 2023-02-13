@@ -14,7 +14,7 @@ To configure the binding, add the Mongo connection string as an app setting or e
 
 The extension currently supports getting either a database or a collection. 
 
-```chsharp
+```csharp
 public void Inputs(
     [CosmosDBMongo(DatabaseName)] IMongoDatabase db,
     [CosmosDBMongo(DatabaseName, CollectionName)] IMongoCollection<BsonDocument> coll)
