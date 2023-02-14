@@ -1,0 +1,107 @@
+name: $(Build.SourceBranchName)_$(Build.Reason)_$(majorVersion).$(Build.BuildId)$(Rev:.r)
+variables:
+  buildConfiguration: Release
+  majorVersion: 0.0.0
+  isReleaseTriggered: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/action/release')]
+
+# Enable PR validation on branches master and dev
+pr:
+  branches:
+    include:
+      - master
+      - dev
+
+# Enable CI on branches master and dev
+# Batch builds
+trigger:
+  batch: true
+  branches:
+    include:
+      - dev
+      - master
+
+continueOnError: false
+#pool:
+#  name: 1ES-Hosted-Azfunc
+#  demands:
+#    - ImageOverride -equals MMSUbuntu20.04TLS
+
+steps:
+  - script: ls -R
+  - task: DotNetCoreCLI@2
+    displayName: Build project
+    inputs:
+      command: 'build'
+      arguments: '--configuration Release -p:IsLocalBuild=False'
+      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
+
+  - task: DotNetCoreCLI@2
+    displayName: Build test projects
+    inputs:
+      command: 'build'
+      arguments: '--configuration Release -p:IsLocalBuild=False'
+      projects: |
+        Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests/Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests.csproj
+
+  - task: DotNetCoreCLI@2
+    displayName: Run unit tests
+    inputs:
+      command: test
+      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
+      arguments: --filter TestCategory!~EmulatorRequired
+    env:
+      CosmosDB: placeholder
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: Component Detection
+
+#  - script:
+#      docker run 
+#      --publish 8081:8081
+#      --publish 10250-10255:10250-10255
+#      --name=test-linux-emulator-mongo
+#      --env AZURE_COSMOS_EMULATOR_PARTITION_COUNT=10
+#      --env AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE=$ipaddr
+#      --env AZURE_COSMOS_EMULATOR_ARGS="/EnableMongoDBEndpoint=4.0"
+#      mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:mongodb
+#    displayName: Start Emulator
+
+#  - task: DotNetCoreCLI@2
+#    displayName: Run e2e tests
+#    inputs:
+#      command: test
+#      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
+#      arguments: --filter TestCategory~EmulatorRequired
+#    env:
+#      CosmosDB: $(CosmosDB)
+
+  - task: DotNetCoreCLI@2
+    displayName: Pack NuGet package
+    inputs:
+      command: pack
+      packDirectory: '$(Build.ArtifactStagingDirectory)'
+      searchPatternPack: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
+      configurationToPack: Release
+      includesymbols: true
+
+  - task: DotNetCoreCLI@2
+    displayName: Pack NuGet package
+    inputs:
+      command: pack
+      packDirectory: '$(Build.ArtifactStagingDirectory)'
+      searchPatternPack: Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor/Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.csproj
+      configurationToPack: Release
+      includesymbols: true
+
+  - task: ManifestGeneratorTask@0
+    displayName: SBOM Generation Task
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)
+      PackageName: Microsoft.Azure.WebJobs.CosmosDb.Mongo
+      Verbosity: Information
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: drop
+      publishLocation: Container

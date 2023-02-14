@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs.CosmosDb.Mongo;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -14,19 +14,21 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo.Sample
     {
         [FunctionName("Sample")]
         public static async Task RunAsync([CosmosDBMongoTrigger(
-            databaseName: "test",
-            collectionName: "test2")]IReadOnlyList<BsonDocument> input,
+            databaseName: "db",
+            collectionName: "original")]IReadOnlyList<BsonDocument> input,
             [CosmosDBMongo(
-            databaseName: "test",
-            collectionName: "test3")]IMongoCollection<BsonDocument> collection,
+            databaseName: "db",
+            collectionName: "duplicate")]IMongoCollection<BsonDocument> collection,
             ILogger log)
         {
             if (input != null && input.Count > 0)
             {
                 log.LogInformation("Documents modified " + input.Count);
-                log.LogInformation("First document " + input[0].ToJson());
+                foreach (var item in input) { 
+                    log.LogInformation("Document " + item.ToJson());
+                }
 
-                await collection.InsertManyAsync(input);
+                await collection.InsertManyAsync(input.Select(changeDocument => changeDocument.AsBsonDocument["fullDocument"].AsBsonDocument));
             }
         }
     }
