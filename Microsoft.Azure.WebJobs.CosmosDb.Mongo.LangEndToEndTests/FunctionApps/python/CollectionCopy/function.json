@@ -1,0 +1,19 @@
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "type": "CosmosDBMongoTriggerAttribute",
+      "name": "input",
+      "direction": "in",
+      "DatabaseName": "db",
+      "MonitoredCollectionName": "collection"
+    },
+    {
+      "type": "CosmosDBMongoAttribute",
+      "direction": "out",
+      "name": "output",
+      "DatabaseName": "db",
+      "MonitoredCollectionName": "collection2"
+    }
+  ]
+}

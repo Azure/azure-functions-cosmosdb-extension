@@ -1,0 +1,2 @@
+ls -r
+func start
