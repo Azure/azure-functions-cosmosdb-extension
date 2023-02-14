@@ -22,7 +22,9 @@ trigger:
 
 continueOnError: false
 pool:
-  name: CosmosDB-1ESAgent
+  name: 1ES-Hosted-Azfunc
+  demands:
+    - ImageOverride -equals MMSUbuntu20.04TLS
 
 steps:
   - task: DotNetCoreCLI@2
