@@ -27,7 +27,6 @@ continueOnError: false
 #    - ImageOverride -equals MMSUbuntu20.04TLS
 
 steps:
-  - script: ls -R
   - task: DotNetCoreCLI@2
     displayName: Build project
     inputs:
