@@ -60,25 +60,13 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo
         {
             try
             {
-
-            await this.leaseCollection.UpdateOneAsync(new BsonDocument(new Dictionary<string, string>()
-                {
-                    { "_id", "lock" }
-                }),
-                new BsonDocument(new Dictionary<string, BsonDocument>()
-                {
-                    { "$set",
-                        new BsonDocument(new Dictionary<string, string>()
+                await this.leaseCollection.InsertOneAsync(
+                    new BsonDocument(new Dictionary<string, string>()
                         {
                             { "_id", "lock" },
                             { "owner", "" }
                         })
-                    }
-                }),
-                new UpdateOptions
-                {
-                    IsUpsert = true
-                });
+                );
             }
             catch (MongoWriteException e)
             {
@@ -120,14 +108,15 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo
 
         public async Task<Tuple<bool, MongoLease>> TakeLeaseAsync(MongoLease lease)
         {
+            lease.SetOwner(this.id);
+            lease.SetTimestamp(DateTime.Now);
             UpdateResult result = await this.leaseCollection.UpdateOneAsync(new BsonDocument(new Dictionary<string, string>()
             {
                 { "_id", lease.Id() }
             }),
-            new BsonDocument("$set", new BsonDocument("owner", this.id)));
+            new BsonDocument("$set", lease.GetDocument()));
             if (result.ModifiedCount > 0)
             {
-                lease.SetOwner(this.id);
                 return new(true, lease);
             }
             return new(false, lease);

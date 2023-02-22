@@ -62,7 +62,9 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo
 
         private BsonTimestamp ConvertDateTime(DateTime time)
         {
-            return new BsonTimestamp((long)((time.ToUniversalTime() - epoch).TotalSeconds + 180000));
+            TimeSpan diff = DateTime.UtcNow - epoch;
+            var ts = new BsonTimestamp((int)(diff.TotalSeconds + 18000), 1);
+            return ts;
         }
 
         private DateTime ConvertBsonTimestamp(BsonTimestamp time)

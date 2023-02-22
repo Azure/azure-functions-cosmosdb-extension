@@ -20,6 +20,9 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor
         private CancellationTokenSource shutdownSource = new CancellationTokenSource();
         private readonly ConcurrentDictionary<string, Tuple<TLease, Task>> tasks = new();
 
+        public int minPartitionCount { get; set; } = 1;
+        public int maxPartitionCount { get; set; } = 4;
+
         public ChangeProcessor(
             string identifier, 
             IPartitioner<TPartition> partitioner,
@@ -59,20 +62,43 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor
 
         private async Task ProcessAsync()
         {
-            IEnumerable<TLease> leases = await this.leaseContainer.GetAllLeasesAsync();
-            IEnumerable<TLease> leasesToTake = new EqualPartitionsBalancingStrategy<TLease, TContinuation>(this.identifier, 0, 4, TimeSpan.FromMinutes(10)).SelectLeasesToTake(leases);
-            foreach (TLease lease in leasesToTake) 
+            while (!shutdownSource.IsCancellationRequested)
             {
-                var (taken, newLease) = await this.leaseContainer.TakeLeaseAsync(lease);
-                if (!taken)
-                {
-                    Trace.Information("Lease {0} was not taken before processing.", lease.Id());
-                    continue;
-                }
+                bool isLockAcquired = await this.leaseContainer.LockAsync();
 
-                if (!this.tasks.TryAdd(newLease.Id(), new(newLease, this.ProcessLeaseAsync(lease, this.shutdownSource.Token))))
+                try
                 {
-                    throw new Exception("Initialization of leases failed.");
+                    if (!isLockAcquired)
+                    {
+                        Trace.Information("Another instance is acquiring leases");
+                        await Task.Delay(TimeSpan.FromSeconds(5));
+                        continue;
+                    }
+
+                    IEnumerable<TLease> leases = await this.leaseContainer.GetAllLeasesAsync();
+                    IEnumerable<TLease> leasesToTake = new EqualPartitionsBalancingStrategy<TLease, TContinuation>(this.identifier, minPartitionCount, maxPartitionCount, TimeSpan.FromMinutes(10)).SelectLeasesToTake(leases);
+                    foreach (TLease lease in leasesToTake)
+                    {
+                        var (taken, newLease) = await this.leaseContainer.TakeLeaseAsync(lease);
+                        if (!taken)
+                        {
+                            Trace.Information("Lease {0} was not taken before processing.", lease.Id());
+                            continue;
+                        }
+
+                        if (!this.tasks.TryAdd(newLease.Id(), new(newLease, this.ProcessLeaseAsync(lease, this.shutdownSource.Token))))
+                        {
+                            throw new Exception("Initialization of leases failed.");
+                        }
+                    }
+                    break;
+                }
+                finally
+                {
+                    if (isLockAcquired)
+                    {
+                        await this.leaseContainer.UnlockAsync();
+                    }
                 }
             }
         }
@@ -155,7 +181,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor
                     if (!isLockAcquired)
                     {
                         Trace.Information("Another instance is initializing the lease container");
-                        await Task.Delay(TimeSpan.FromSeconds(15));
+                        await Task.Delay(TimeSpan.FromSeconds(5));
                         continue;
                     }
 

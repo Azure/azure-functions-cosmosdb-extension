@@ -28,7 +28,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
         }
 
         [AutoResolve]
-        public string? ConnectionStringKey { get; private set; }
+        public string? ConnectionStringKey { get; set; }
 
         [AutoResolve]
         public string DatabaseName { get; private set; }
@@ -37,12 +37,12 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
         public string CollectionName { get; private set; }
         
         [ConnectionString]
-        public string? LeaseConnectionStringKey { get; private set; }
+        public string? LeaseConnectionStringKey { get; set; }
 
         [AutoResolve]
-        public string LeaseDatabaseName { get; private set; }
+        public string LeaseDatabaseName { get; set; }
 
         [AutoResolve]
-        public string LeaseCollectionName { get; private set; }
+        public string LeaseCollectionName { get; set; }
     }
 }

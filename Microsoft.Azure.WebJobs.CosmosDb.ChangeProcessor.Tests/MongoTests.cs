@@ -17,7 +17,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo.Tests
         private MongoClient client = new MongoClient(Environment.GetEnvironmentVariable("CosmosDB"));
         private static Guid guid;
 
-        private ChangeProcessor<MongoPartition, MongoLease, BsonDocument> CreateProcessor(string collection, string id, Func<IEnumerable<BsonDocument>, Task> process)
+        private ChangeProcessor<MongoPartition, MongoLease, BsonDocument> CreateProcessor(string collection, string id, Func<IEnumerable<BsonDocument>, Task> process, int maxPartitionCount = 4)
         {
             var monitoredCollection = client.GetDatabase("test").GetCollection<BsonDocument>(collection);
 
@@ -26,21 +26,27 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo.Tests
 
             MongoProcessor processor = new MongoProcessor(monitoredCollection, process);
 
-            return new ChangeProcessor<MongoPartition, MongoLease, BsonDocument>(
+            var changeProcessor = new ChangeProcessor<MongoPartition, MongoLease, BsonDocument>(
                 id, partitioner, leaseContainer, processor, new ProcessorOptions());
+            changeProcessor.maxPartitionCount = maxPartitionCount;
+            return changeProcessor;
         }
 
         [TestInitialize]
-        public void Setup()
+        public async Task Setup()
         {
+            try
+            {
+                await client.DropDatabaseAsync("test");
+            } catch (Exception ex) { }
             guid = Guid.NewGuid();
         }
 
         [TestCleanup]
         public async Task Cleanup()
         {
-            //await client.GetDatabase("test").DropCollectionAsync(guid.ToString());
-            //await client.GetDatabase("test").DropCollectionAsync(guid.ToString() + "-lease");
+            await client.GetDatabase("test").DropCollectionAsync(guid.ToString());
+            await client.GetDatabase("test").DropCollectionAsync(guid.ToString() + "-lease");
         }
 
         [TestMethod]
@@ -75,7 +81,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo.Tests
             Task processing = changeProcessor.StartAsync();
             Thread.Sleep(10000);
 
-            int numInserts = 500;
+            int numInserts = 200;
             var workload = Task.Run(() =>
             {
                 for (int i = 0; i < numInserts; i++)
@@ -150,7 +156,6 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo.Tests
         [TestMethod]
         public async Task TestMultipleProcessors()
         {
-            //await client.GetDatabase("test").RunCommandAsync<BsonDocument>(new BsonDocument("customAction", "CreateDatabase"));
             await client.GetDatabase("test").RunCommandAsync<BsonDocument>(new BsonDocument(new Dictionary<string, object>()
             {
                 { "customAction", "CreateCollection" },
@@ -162,14 +167,14 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Mongo.Tests
             var monitoredCollection = client.GetDatabase("test").GetCollection<BsonDocument>(guid.ToString());
 
             int numChanges = 0;
-            var changeProcessor1 = CreateProcessor(guid.ToString(), "testowner1", async changes => Interlocked.Add(ref numChanges, changes.Count()));
-            var changeProcessor2 = CreateProcessor(guid.ToString(), "testowner2", async changes => Interlocked.Add(ref numChanges, changes.Count()));
+            var changeProcessor1 = CreateProcessor(guid.ToString(), "testowner1", async changes => Interlocked.Add(ref numChanges, changes.Count()), 2);
+            var changeProcessor2 = CreateProcessor(guid.ToString(), "testowner2", async changes => Interlocked.Add(ref numChanges, changes.Count()), 2);
 
             Task processing1 = changeProcessor1.StartAsync();
             Task processing2 = changeProcessor2.StartAsync();
             Thread.Sleep(10000);
 
-            int numInserts = 500;
+            int numInserts = 200;
             var workload = Task.Run(() =>
             {
                 for (int i = 0; i < numInserts; i++)

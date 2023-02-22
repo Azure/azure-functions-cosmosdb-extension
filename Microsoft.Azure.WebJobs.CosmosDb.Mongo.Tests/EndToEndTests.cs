@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Diagnostics;
+using MongoDB.Bson.Serialization;
 
 namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
 {
@@ -58,7 +59,9 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
 
                 await WaitForPredicate(
                     () => {
-                        return _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("triggered")) == 3;
+                        return _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("Doc triggered")) == 3
+                            && _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("String triggered")) == 3
+                            && _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("Strings triggered")) == 3;
                     });
             });
         }
@@ -116,6 +119,33 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
                 foreach (BsonDocument doc in docs)
                 {
                     logger.LogInformation("Doc triggered");
+                }
+            }
+
+            public static void TriggerString(
+                [CosmosDBMongoTrigger(DatabaseName, MonitoredCollectionName, LeaseCollectionName = "leaseString")] string docs,
+                ILogger logger)
+            {
+                try
+                {
+                    BsonArray bson = BsonSerializer.Deserialize<BsonArray>(docs);
+                    foreach (BsonDocument doc in bson)
+                    {
+                        logger.LogInformation("String triggered");
+                    }
+                } catch (Exception e)
+                {
+                    logger.LogInformation(e.ToString());
+                }
+            }
+
+            public static void TriggerStrings(
+                [CosmosDBMongoTrigger(DatabaseName, MonitoredCollectionName, LeaseCollectionName = "leaseStrings")] IEnumerable<string> docs,
+                ILogger logger)
+            {
+                foreach (string doc in docs)
+                {
+                    logger.LogInformation("Strings triggered");
                 }
             }
         }

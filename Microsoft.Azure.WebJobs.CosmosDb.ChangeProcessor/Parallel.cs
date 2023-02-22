@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor
 {
-    internal static class Parallel
+    public static class Parallel
     {
         public static Task ForEachAsync<TSource>(
             this IEnumerable<TSource> source,

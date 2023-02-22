@@ -25,7 +25,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
             this.leaseCollection = leaseCollection;
         }
 
-        public Type TriggerValueType => typeof(IEnumerable<BsonDocument>);
+        public Type TriggerValueType => parameter.ParameterType;
 
         public IReadOnlyDictionary<string, Type> BindingDataContract => _emptyBindingContract;
 
@@ -38,6 +38,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
         {
             return Task.FromResult<IListener>(new CosmosDBMongoTriggerListener(
                 context.Executor,
+                parameter,
                 monitoredCollection,
                 leaseCollection));
         }
