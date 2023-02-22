@@ -8,7 +8,7 @@
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageProjectUrl>https://github.com/Azure/azure-functions-cosmosdb-extension</PackageProjectUrl>
 	<Authors>Microsoft</Authors>
-	<Version>1.0.1</Version>
+	<Version>1.0.2</Version>
 	  
 	<!-- Add strong name signing properties -->
 	<SignAssembly>True</SignAssembly>
