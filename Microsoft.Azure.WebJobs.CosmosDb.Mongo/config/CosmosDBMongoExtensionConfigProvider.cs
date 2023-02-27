@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Config;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
@@ -28,6 +29,14 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
 
         public void Initialize(ExtensionConfigContext context)
         {
+            context.AddOpenConverter<BsonEnumerableType, byte[]>((docs, _, _) => Task.FromResult<object>(docs.ToJson()))
+                   .AddOpenConverter<BsonEnumerableType, IEnumerable<byte[]>>((o, _, _) =>
+                   {
+                       IEnumerable<BsonDocument> docs = (IEnumerable<BsonDocument>)o;
+                       return Task.FromResult<object>(docs.Select(d => d.ToBson()));
+                   })
+                   .AddConverter<List<BsonDocument>, byte[]>(docs => docs.ToBson());
+
             var triggerRule = context.AddBindingRule<CosmosDBMongoTriggerAttribute>();
             triggerRule.AddValidator((attr, t) =>
             {

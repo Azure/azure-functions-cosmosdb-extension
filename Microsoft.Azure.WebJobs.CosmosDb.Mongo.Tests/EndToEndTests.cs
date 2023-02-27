@@ -60,8 +60,7 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
                 await WaitForPredicate(
                     () => {
                         return _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("Doc triggered")) == 3
-                            && _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("String triggered")) == 3
-                            && _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("Strings triggered")) == 3;
+                            && _loggerProvider.GetAllLogMessages().Count(m => m.FormattedMessage != null && m.FormattedMessage.Contains("Bytes triggered")) == 3;
                     });
             });
         }
@@ -122,30 +121,17 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
                 }
             }
 
-            public static void TriggerString(
-                [CosmosDBMongoTrigger(DatabaseName, MonitoredCollectionName, LeaseCollectionName = "leaseString")] string docs,
-                ILogger logger)
-            {
-                try
-                {
-                    BsonArray bson = BsonSerializer.Deserialize<BsonArray>(docs);
-                    foreach (BsonDocument doc in bson)
-                    {
-                        logger.LogInformation("String triggered");
-                    }
-                } catch (Exception e)
-                {
-                    logger.LogInformation(e.ToString());
-                }
-            }
 
-            public static void TriggerStrings(
-                [CosmosDBMongoTrigger(DatabaseName, MonitoredCollectionName, LeaseCollectionName = "leaseStrings")] IEnumerable<string> docs,
+            public static void TriggerBytes(
+                [CosmosDBMongoTrigger(DatabaseName, MonitoredCollectionName, LeaseCollectionName = "leaseBytes")] byte[] bytes,
                 ILogger logger)
             {
-                foreach (string doc in docs)
+                BsonDocument result = BsonSerializer.Deserialize<BsonDocument>(bytes);
+                Assert.IsNotNull(result);
+                Assert.IsTrue(result["results"].IsBsonArray);
+                foreach (BsonDocument doc in result["results"].AsBsonArray)
                 {
-                    logger.LogInformation("Strings triggered");
+                    logger.LogInformation("Bytes triggered");
                 }
             }
         }

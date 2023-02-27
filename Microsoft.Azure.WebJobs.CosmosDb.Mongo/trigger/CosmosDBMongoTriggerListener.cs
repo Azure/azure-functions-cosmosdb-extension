@@ -27,14 +27,12 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.Mongo
                 async docs => {
 
                     TriggeredFunctionData data;
-                    if (parameter.ParameterType == typeof(string))
+                    if (parameter.ParameterType == typeof(byte[]))
                     {
-                        data = new TriggeredFunctionData() { TriggerValue = BsonArray.Create(docs).ToJson() };
+                        data = new TriggeredFunctionData() { TriggerValue = 
+                            new BsonDocument("results", BsonArray.Create(docs)).ToBson() 
+                        };
                     }
-                    else if (parameter.ParameterType.IsGenericType && parameter.ParameterType.GenericTypeArguments[0] == typeof(string))
-                    {
-                        data = new TriggeredFunctionData() { TriggerValue = docs.Select(doc => doc.ToJson()) };
-                    } 
                     else
                     {
                         data = new TriggeredFunctionData() { TriggerValue = docs };
