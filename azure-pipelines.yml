@@ -32,7 +32,7 @@ steps:
     inputs:
       command: 'build'
       arguments: '--configuration Release -p:IsLocalBuild=False'
-      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
+      projects: Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo/Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.csproj
 
   - task: DotNetCoreCLI@2
     displayName: Build test projects
@@ -40,13 +40,13 @@ steps:
       command: 'build'
       arguments: '--configuration Release -p:IsLocalBuild=False'
       projects: |
-        Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests/Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests.csproj
+        Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests/Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests.csproj
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
     inputs:
       command: test
-      projects: Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests
+      projects: Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests
       arguments: --filter TestCategory!~EmulatorRequired
     env:
       CosmosDB: placeholder
@@ -79,7 +79,7 @@ steps:
     inputs:
       command: pack
       packDirectory: '$(Build.ArtifactStagingDirectory)'
-      searchPatternPack: Microsoft.Azure.WebJobs.CosmosDb.Mongo/Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj
+      searchPatternPack: Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo/Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.csproj
       configurationToPack: Release
       includesymbols: true
 
@@ -88,7 +88,7 @@ steps:
     inputs:
       command: pack
       packDirectory: '$(Build.ArtifactStagingDirectory)'
-      searchPatternPack: Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor/Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.csproj
+      searchPatternPack: Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor/Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.csproj
       configurationToPack: Release
       includesymbols: true
 
