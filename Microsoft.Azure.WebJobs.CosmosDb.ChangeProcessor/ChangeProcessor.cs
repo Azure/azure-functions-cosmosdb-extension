@@ -154,10 +154,6 @@ namespace Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor
             {
                 Trace.Information(e.Message);
             }
-            catch (Exception e)
-            {
-                Trace.Information(e.Message);
-            }
             finally
             {
                 await this.leaseContainer.ReleaseLeaseAsync(lease);
