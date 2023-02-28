@@ -10,7 +10,7 @@
 	<PackageReference Include="MongoDB.Driver" Version="2.17.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Azure.WebJobs.CosmosDb.Mongo\Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj" />
+    <ProjectReference Include="..\Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo\Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

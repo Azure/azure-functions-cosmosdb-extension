@@ -3,18 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor", "Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor\Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.csproj", "{F3B7CB42-CE32-45B7-80CF-B5E5E9387547}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor", "Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor\Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.csproj", "{F3B7CB42-CE32-45B7-80CF-B5E5E9387547}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Tests", "Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Tests\Microsoft.Azure.WebJobs.CosmosDb.ChangeProcessor.Tests.csproj", "{3172F04B-840A-41E1-B586-AEC5C74603F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Tests", "Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Tests\Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Tests.csproj", "{3172F04B-840A-41E1-B586-AEC5C74603F0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F3B7CB42-CE32-45B7-80CF-B5E5E9387547} = {F3B7CB42-CE32-45B7-80CF-B5E5E9387547}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.CosmosDb.Mongo", "Microsoft.Azure.WebJobs.CosmosDb.Mongo\Microsoft.Azure.WebJobs.CosmosDb.Mongo.csproj", "{0BFBE461-7EC5-4749-9AFA-EF93F04E38C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo", "Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo\Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.csproj", "{0BFBE461-7EC5-4749-9AFA-EF93F04E38C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests", "Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests\Microsoft.Azure.WebJobs.CosmosDb.Mongo.Tests.csproj", "{DA6E232B-F1DA-4252-BBA0-F88A4208FA4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests", "Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests\Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests.csproj", "{DA6E232B-F1DA-4252-BBA0-F88A4208FA4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{7421755B-5FFC-48D5-805A-D4385B195088}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "Sample\Sample.csproj", "{7421755B-5FFC-48D5-805A-D4385B195088}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0BFBE461-7EC5-4749-9AFA-EF93F04E38C1} = {0BFBE461-7EC5-4749-9AFA-EF93F04E38C1}
 	EndProjectSection
