@@ -2,14 +2,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.LoadBalancing;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
 {
     public class ChangeProcessor<TPartition, TLease, TContinuation>
         where TPartition : IPartition
-        where TLease : ILease<TContinuation>
-        where TContinuation : notnull
+        where TLease : class, ILease<TContinuation>
+        where TContinuation : class
     {
         private readonly string identifier;
         private readonly IPartitioner<TPartition> partitioner;
@@ -18,7 +23,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
         private readonly ProcessorOptions options;
         private static readonly int DefaultDegreeOfParallelism = 25;
         private CancellationTokenSource shutdownSource = new CancellationTokenSource();
-        private readonly ConcurrentDictionary<string, Tuple<TLease, Task>> tasks = new();
+        private readonly ConcurrentDictionary<string, Tuple<TLease, Task>> tasks = new ConcurrentDictionary<string, Tuple<TLease, Task>>();
 
         public int minPartitionCount { get; set; } = 1;
         public int maxPartitionCount { get; set; } = 4;
@@ -39,7 +44,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
 
         public async Task StartAsync()
         {
-            shutdownSource = new();
+            shutdownSource = new CancellationTokenSource();
             await this.InitializeLeasesAsync();
             await this.ProcessAsync();
         }
@@ -86,7 +91,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
                             continue;
                         }
 
-                        if (!this.tasks.TryAdd(newLease.Id(), new(newLease, this.ProcessLeaseAsync(lease, this.shutdownSource.Token))))
+                        if (!this.tasks.TryAdd(newLease.Id(), new Tuple<TLease, Task>(newLease, this.ProcessLeaseAsync(lease, this.shutdownSource.Token))))
                         {
                             throw new Exception("Initialization of leases failed.");
                         }

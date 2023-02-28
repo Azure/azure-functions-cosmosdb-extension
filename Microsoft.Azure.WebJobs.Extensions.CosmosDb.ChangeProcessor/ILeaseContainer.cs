@@ -3,6 +3,7 @@
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 

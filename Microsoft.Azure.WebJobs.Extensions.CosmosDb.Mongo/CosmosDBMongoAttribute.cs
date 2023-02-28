@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.Azure.WebJobs.Description;
+using System;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo
 {

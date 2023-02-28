@@ -4,6 +4,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host.Triggers;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo
 {

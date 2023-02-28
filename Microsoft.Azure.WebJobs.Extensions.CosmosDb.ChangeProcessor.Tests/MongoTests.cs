@@ -1,15 +1,18 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using MongoDB.Driver;
+using MongoDB.Bson;
+using System.Collections.Concurrent;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo.Tests
 {
-    using Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo;
-    using Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor;
-    using MongoDB.Driver;
-    using MongoDB.Bson;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using System.Collections.Concurrent;
-
     [TestClass]
     [TestCategory("EmulatorRequired")]
     public class MongoTests
@@ -22,7 +25,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo.Test
             var monitoredCollection = client.GetDatabase("test").GetCollection<BsonDocument>(collection);
 
             MongoPartitioner partitioner = new MongoPartitioner(client.GetDatabase("test"), collection);
-            MongoLeaseContainer leaseContainer = new(client.GetDatabase("test").GetCollection<BsonDocument>(collection + "-lease"), id);
+            MongoLeaseContainer leaseContainer = new MongoLeaseContainer(client.GetDatabase("test").GetCollection<BsonDocument>(collection + "-lease"), id);
 
             MongoProcessor processor = new MongoProcessor(monitoredCollection, process);
 
@@ -208,7 +211,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo.Test
             var monitoredCollection = client.GetDatabase("test").GetCollection<BsonDocument>(guid.ToString());
 
             int numChanges = 0;
-            ConcurrentDictionary<string, string> changes = new();
+            ConcurrentDictionary<string, string> changes = new ConcurrentDictionary<string, string>();
             var changeProcessor = CreateProcessor(guid.ToString(), "testowner1", 
                 async changeBatch => {
                     Interlocked.Add(ref numChanges, changeBatch.Count());

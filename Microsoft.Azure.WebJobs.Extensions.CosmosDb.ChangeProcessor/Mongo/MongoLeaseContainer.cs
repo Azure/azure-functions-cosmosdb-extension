@@ -3,6 +3,10 @@
 
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo
 {
@@ -103,7 +107,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo
                 { "owner", this.id }
             }),
             new BsonDocument("$set", lease.GetDocument()));
-            return new(result.ModifiedCount > 0, lease);
+            return new Tuple<bool, MongoLease>(result.ModifiedCount > 0, lease);
         }
 
         public async Task<Tuple<bool, MongoLease>> TakeLeaseAsync(MongoLease lease)
@@ -117,9 +121,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo
             new BsonDocument("$set", lease.GetDocument()));
             if (result.ModifiedCount > 0)
             {
-                return new(true, lease);
+                return new Tuple<bool, MongoLease>(true, lease);
             }
-            return new(false, lease);
+            return new Tuple<bool, MongoLease>(false, lease);
         }
 
         public async Task<Tuple<bool, MongoLease>> ReleaseLeaseAsync(MongoLease lease)
@@ -133,9 +137,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo
             if (result.ModifiedCount > 0)
             {
                 lease.SetOwner("");
-                return new(true, lease);
+                return new Tuple<bool, MongoLease>(true, lease);
             }
-            return new(false, lease);
+            return new Tuple<bool, MongoLease>(false, lease);
         }
     }
 }

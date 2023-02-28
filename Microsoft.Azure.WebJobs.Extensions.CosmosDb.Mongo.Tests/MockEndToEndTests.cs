@@ -7,8 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Moq;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests.models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests
 {
@@ -45,7 +49,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo.Tests
             serviceMock.Setup(m => m.GetDatabase(It.IsAny<string>(), default)).Returns(monitoredDatabaseMock.Object);
 
             var factoryMock = new Mock<ICosmosDBMongoServiceFactory>(MockBehavior.Strict);
-            factoryMock.Setup(f => f.CreateService(It.IsAny<String>())).Returns(serviceMock.Object);
+            factoryMock.Setup(f => f.CreateService(It.IsAny<string>())).Returns(serviceMock.Object);
 
             return (factoryMock, new List<dynamic> { monitoredDatabaseMock, bsonMock, itemMock, serviceMock }.AsEnumerable());
         }

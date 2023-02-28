@@ -3,6 +3,11 @@
 
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo
 {
@@ -34,7 +39,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.Mongo
 
         public async Task<BsonDocument?> ProcessAsync(MongoLease lease, CancellationToken cancellationToken, Action<TimeSpan> delay, Action<BsonDocument> checkpoint)
         {
-            ChangeStreamOptions options = new()
+            ChangeStreamOptions options = new ChangeStreamOptions()
             {   
                 ResumeAfter = lease.Continuation(),
                 FullDocument = ChangeStreamFullDocumentOption.UpdateLookup,

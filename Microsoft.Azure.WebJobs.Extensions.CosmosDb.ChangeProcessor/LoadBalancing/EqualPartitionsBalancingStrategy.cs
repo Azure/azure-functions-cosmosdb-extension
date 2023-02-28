@@ -1,10 +1,14 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.LoadBalancing
 {
     internal sealed class EqualPartitionsBalancingStrategy<TLease, TContinuation> : LoadBalancingStrategy<TLease, TContinuation>
-        where TLease : ILease<TContinuation>
+        where TLease : class, ILease<TContinuation>
         where TContinuation : notnull
     {
         internal static int DefaultMinLeaseCount = 0;
@@ -25,9 +29,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.LoadBalanc
 
         public override IEnumerable<TLease> SelectLeasesToTake(IEnumerable<TLease> allLeases)
         {
-            Dictionary<string, int> workerToPartitionCount = new();
+            Dictionary<string, int> workerToPartitionCount = new Dictionary<string, int>();
             List<TLease> expiredLeases = new List<TLease>();
-            Dictionary<TContinuation, TLease> allPartitions = new();
+            Dictionary<TContinuation, TLease> allPartitions = new Dictionary<TContinuation, TLease>();
             this.CategorizeLeases(allLeases, allPartitions, expiredLeases, workerToPartitionCount);
 
             int partitionCount = allPartitions.Count;

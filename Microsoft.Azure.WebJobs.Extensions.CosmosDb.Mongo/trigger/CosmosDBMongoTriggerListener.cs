@@ -7,8 +7,11 @@ using Microsoft.Azure.WebJobs.Host.Executors;
 using Microsoft.Azure.WebJobs.Host.Listeners;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo
 {
@@ -21,7 +24,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo
             string id = Guid.NewGuid().ToString();
 
             MongoPartitioner partitioner = new MongoPartitioner(monitoredCollection.client.GetDatabase(monitoredCollection.databaseName), monitoredCollection.collectionName);
-            MongoLeaseContainer leaseContainer = new(leaseCollection.client.GetDatabase(leaseCollection.databaseName).GetCollection<BsonDocument>(leaseCollection.collectionName), id);
+            MongoLeaseContainer leaseContainer = new MongoLeaseContainer(leaseCollection.client.GetDatabase(leaseCollection.databaseName).GetCollection<BsonDocument>(leaseCollection.collectionName), id);
 
             MongoProcessor processor = new MongoProcessor(monitoredCollection.client.GetDatabase(monitoredCollection.databaseName).GetCollection<BsonDocument>(monitoredCollection.collectionName), 
                 async docs => {

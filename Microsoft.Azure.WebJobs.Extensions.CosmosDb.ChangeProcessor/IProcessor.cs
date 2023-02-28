@@ -10,6 +10,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
 
     public interface IProcessor<TLease, TContinuation>
         where TLease : ILease<TContinuation>
+        where TContinuation : class
     {
         public Task<TContinuation?> ProcessAsync(TLease lease, CancellationToken cancellationToken, Action<TimeSpan> delay, Action<TContinuation> checkpoint);
     }
