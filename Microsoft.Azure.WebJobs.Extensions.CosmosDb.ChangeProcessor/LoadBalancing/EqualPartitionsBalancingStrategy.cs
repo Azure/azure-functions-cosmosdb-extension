@@ -132,7 +132,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor.LoadBalanc
                 allPartitions.Add(lease.Continuation(), lease);
                 if (string.IsNullOrWhiteSpace(lease.Owner()) || this.IsExpired(lease))
                 {
-                    Trace.Information("Found unused or expired lease: {0}", lease);
+                    Trace.Information(this.hostName, "Found unused or expired lease: {0}", lease.Id());
                     expiredLeases.Add(lease);
                 }
                 else

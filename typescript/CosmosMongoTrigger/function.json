@@ -1,0 +1,13 @@
+{
+  "bindings": [
+    {
+      "type": "cosmosDBMongoTrigger",
+      "name": "documents",
+      "direction": "in",
+      "dataType": "binary",
+      "databaseName": "db",
+      "collectionName": "collection"
+    }
+  ],
+  "scriptFile": "../dist/CosmosMongoTrigger/index.js"
+}

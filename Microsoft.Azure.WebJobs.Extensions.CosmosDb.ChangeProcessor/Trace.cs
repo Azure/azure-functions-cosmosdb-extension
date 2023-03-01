@@ -9,9 +9,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
     {
         private static TraceSource traceSource = new TraceSource("CosmosChangeProcessor");
 
-        public static void Information(string message, params object[] args)
+        public static void Information(string id, string message, params object[] args)
         {
-            traceSource.TraceEvent(TraceEventType.Information, 0, message, args);
+            traceSource.TraceEvent(TraceEventType.Information, 0, id + " - " + message, args);
         }
     }
 }

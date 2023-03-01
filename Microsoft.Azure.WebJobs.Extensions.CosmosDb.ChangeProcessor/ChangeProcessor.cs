@@ -75,7 +75,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
                 {
                     if (!isLockAcquired)
                     {
-                        Trace.Information("Another instance is acquiring leases");
+                        Trace.Information(this.identifier, "Another instance is acquiring leases");
                         await Task.Delay(TimeSpan.FromSeconds(5));
                         continue;
                     }
@@ -135,7 +135,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
                     {
                         if (!ReferenceEquals(await Task.WhenAny(task, Task.Delay(this.options.RequestTimeout, timeoutCancellation.Token)), task))
                         {
-                            Task catchExceptionFromTask = task.ContinueWith(task => Trace.Information(
+                            Task catchExceptionFromTask = task.ContinueWith(task => Trace.Information(this.identifier,
                                 "Timed out - change request failed with exception: {0}", task.Exception!.InnerException!),
                                 TaskContinuationOptions.OnlyOnFaulted);
                             throw new Exception("Change request timed out");
@@ -157,7 +157,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
             } 
             catch (OperationCanceledException e)
             {
-                Trace.Information(e.Message);
+                Trace.Information(this.identifier, e.Message);
             }
             finally
             {
@@ -181,12 +181,12 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
                 {
                     if (!isLockAcquired)
                     {
-                        Trace.Information("Another instance is initializing the lease container");
+                        Trace.Information(this.identifier, "Another instance is initializing the lease container");
                         await Task.Delay(TimeSpan.FromSeconds(5));
                         continue;
                     }
 
-                    Trace.Information("Initializing the lease container");
+                    Trace.Information(this.identifier, "Initializing the lease container");
                     IEnumerable<TPartition> partitions = await this.partitioner.GetPartitionsAsync();
                     await partitions.ForEachAsync(
                         async partition => await this.leaseContainer.CreateLeaseAsync(partition),
@@ -204,7 +204,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDb.ChangeProcessor
                 break;
             }
 
-            Trace.Information("The lease container is initialized");
+            Trace.Information(this.identifier, "The lease container is initialized");
         }
     }
 }
