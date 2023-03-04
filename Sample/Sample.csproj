@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 	<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
-	<PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+	<PackageReference Include="MongoDB.Driver" Version="2.19.0" />
 	<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
