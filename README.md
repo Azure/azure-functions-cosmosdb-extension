@@ -88,12 +88,12 @@ public static void Trigger(
 
 Until the extension becomes available in the portal and extension bundles, it can be used by directly installing the extension. Either use whatever tool/template to create a CosmosDB Trigger and modify it as follows, or use the example projects for [C#](Sample) and [Typescript](typescript).
 
-1. Remove the extension bundle from `host.json`
+1. Remove the extension bundle from `host.json` if it exists.
 2. Run `func extensions install --package Microsoft.Azure.WebJobs.Extensions.CosmosDb.Mongo --version 1.0.2`
 3. Modify the `function.json` and/or annotations to 
    - `"type":"cosmosDBMongoTrigger"` 
    - `"datatype":"binary"` 
    - `createLeaseCollectionIfNotExists` can be removed
    - Rename `connectionStringSetting` to `connectionStringKey`
-4. Change the `local.settings.json` value given in `connectionStringKey` with the mongodb account URI.
+4. Add the Mongo connection string as an app setting or environment variable using the setting name `CosmosDB`
 5. Change the function file itself to take a language specific binary type and deserialize it with the language specific BSON driver.
