@@ -8,7 +8,7 @@ The extension for working with the NoSQL API is located in the general [WebJobs 
 
 ## MongoDB Api
 
-To configure the binding, add the Mongo connection string as an app setting or environment variable using the setting name `CosmosDB`. The name of the setting can be changed with the `ConnectionStringKey` proeprty of the binding attribute.
+To configure the binding, add the Mongo connection string as an app setting or environment variable using the setting name `CosmosDB`. The name of the setting can be changed with the `ConnectionStringKey` property of the binding attribute.
 
 ### Reading Documents
 
